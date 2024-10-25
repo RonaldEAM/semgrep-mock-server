@@ -1,0 +1,224 @@
+{
+  "uuid": "3497943b-42ab-4999-b350-e7fcf8708b02",
+  "lastMigration": 32,
+  "name": "Semgrep",
+  "endpointPrefix": "api/v1",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "9afd46fa-7b80-4aca-b65d-4349ca39f366",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "deployments",
+      "responses": [
+        {
+          "uuid": "50f18e31-4960-4b63-863f-0df24ba43f3a",
+          "body": "{\n  \"deployments\": [\n    {{#repeat 10}}\n    {{setVar 'slug' (faker 'lorem.slug')}}\n    {\n      \"slug\": \"{{getVar 'slug'}}\",\n      \"id\": {{add @index 1}},\n      \"name\": \"{{getVar 'slug'}}\",\n      \"findings\": {\n        \"url\": \"{{baseUrl}}/deployments/{{@index}}/findings\"\n      }\n    }\n    {{/repeat}}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "7146872a-2e50-468b-8116-3fdca220e225",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "deployments/:deploymentSlug/projects",
+      "responses": [
+        {
+          "uuid": "b7a77f3a-c690-48e0-88a2-91020a5ab69f",
+          "body": "{\n  \"projects\": [\n    {{#repeat (queryParam 'page_size' 100)}}\n    {{setVar 'org' (faker 'lorem.word')}}\n    {{setVar 'repo' (faker 'lorem.word')}}\n    {\n      \"id\": {{add @index 1}},\n      \"name\": \"{{getVar 'org'}}/{{getVar 'repo'}}\",\n      \"url\": \"https://github.com/{{getVar 'org'}}/{{getVar 'repo'}}\",\n      \"tags\": [\n        \"tag\"\n      ],\n      \"created_at\": \"{{faker 'date.past'}}\",\n      \"latest_scan_at\": \"{{faker 'date.recent'}}\",\n      \"primary_branch\": \"refs/heads/custom-main\",\n      \"default_branch\": \"refs/heads/main\"\n    }\n    {{/repeat}}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "7c19768c-da03-4a6c-af34-e1c31822852c",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "deployments/:deploymentId/ssc-vulns",
+      "responses": [
+        {
+          "uuid": "dae94bee-5fe5-42d3-ac2d-7a64b6169666",
+          "body": "{\n  \"hasMore\": false,\n  \"cursor\": {\n    \"vulnOffset\": \"16\",\n    \"issueOffset\": \"40529575\"\n  },\n  \"vulns\": [\n    {{#repeat (queryParam 'page_size' 100)}}\n    {{setVar 'title' (faker 'lorem.sentence' 5)}}\n    {{setVar 'uuid' (faker 'string.uuid')}}\n    {\n      \"title\": \"{{getVar 'title'}}\",\n      \"advisory\": {\n        \"ruleId\": \"ssc-{{getVar 'uuid'}}\",\n        \"title\": \"{{getVar 'title'}}\",\n        \"description\": \"{{faker 'lorem.paragraph'}}\",\n        \"ecosystem\": \"npm\",\n        \"severity\": \"{{oneOf (array 'CRITICAL' 'HIGH' 'MEDIUM' 'LOW')}}\",\n        \"references\": {\n          \"cveIds\": [\n            \"CVE-2023-28154\"\n          ],\n          \"cweIds\": [\n            \"CWE-284: Improper Access Control\"\n          ],\n          \"owaspIds\": [\n            \"A06:2021 - Vulnerable and Outdated Components\"\n          ],\n          \"urls\": [\n            \"https://github.com/advisories/GHSA-hc6q-2mpp-qw7j\",\n            \"https://nvd.nist.gov/vuln/detail/CVE-2023-28154\"\n          ]\n        },\n        \"announcedAt\": \"2023-03-13T03:30:15Z\",\n        \"ruleText\": \"{\\n  \\\"id\\\": \\\"ssc-37ae9e0a-cbf0-4910-8f73-04f2275899a6\\\",\\n  \\\"message\\\": \\\"webpack 5.x before 5.76.0 is vulnerable to Improper Access Control due to ImportParserPlugin.js mishandling the magic comment feature. Due to this, webpack does not avoid cross-realm object access and an attacker who controls a property of an untrusted object can obtain access to the real global object.\\\",\\n  \\\"severity\\\": \\\"ERROR\\\",\\n  \\\"metadata\\\": {\\n    \\\"confidence\\\": \\\"HIGH\\\",\\n    \\\"category\\\": \\\"security\\\",\\n    \\\"cve\\\": \\\"CVE-2023-28154\\\",\\n    \\\"cwe\\\": [\\n      \\\"CWE-284: Improper Access Control\\\"\\n    ],\\n    \\\"ghsa\\\": \\\"GHSA-hc6q-2mpp-qw7j\\\",\\n    \\\"owasp\\\": [\\n      \\\"A06:2021 - Vulnerable and Outdated Components\\\"\\n    ],\\n    \\\"publish-date\\\": \\\"2023-03-13T03:30:15Z\\\",\\n    \\\"references\\\": [\\n      \\\"https://github.com/advisories/GHSA-hc6q-2mpp-qw7j\\\",\\n      \\\"https://nvd.nist.gov/vuln/detail/CVE-2023-28154\\\"\\n    ],\\n    \\\"sca-fix-versions\\\": [\\n      {\\n        \\\"webpack\\\": \\\"5.76.0\\\"\\n      }\\n    ],\\n    \\\"sca-kind\\\": \\\"upgrade-only\\\",\\n    \\\"sca-reachable-if\\\": \\\"you host an application utilizing webpack and an attacker can control a property of an untrusted object\\\",\\n    \\\"sca-schema\\\": 20230302,\\n    \\\"sca-severity\\\": \\\"CRITICAL\\\",\\n    \\\"sca-vuln-database-identifier\\\": \\\"CVE-2023-28154\\\",\\n    \\\"technology\\\": [\\n      \\\"js\\\",\\n      \\\"ts\\\"\\n    ],\\n    \\\"license\\\": \\\"Copyright 2023 Semgrep, Inc.\\\",\\n    \\\"vulnerability_class\\\": [\\n      \\\"Improper Authorization\\\"\\n    ],\\n    \\\"semgrep.dev\\\": {\\n      \\\"rule\\\": {\\n        \\\"r_id\\\": 94673,\\n        \\\"rv_id\\\": 754473,\\n        \\\"rule_id\\\": \\\"EwUj2JO\\\",\\n        \\\"version_id\\\": \\\"RGTqlyP\\\",\\n        \\\"url\\\": \\\"https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-37ae9e0a-cbf0-4910-8f73-04f2275899a6\\\",\\n        \\\"origin\\\": \\\"custom\\\"\\n      }\\n    }\\n  },\\n  \\\"r2c-internal-project-depends-on\\\": {\\n    \\\"depends-on-either\\\": [\\n      {\\n        \\\"namespace\\\": \\\"npm\\\",\\n        \\\"package\\\": \\\"webpack\\\",\\n        \\\"version\\\": \\\">=5.0.0, <5.76.0\\\"\\n      }\\n    ]\\n  },\\n  \\\"languages\\\": [\\n    \\\"js\\\",\\n    \\\"ts\\\"\\n  ]\\n}\",\n        \"reachability\": \"MANUAL_REVIEW_REACHABLE\",\n        \"vulnerableDependencies\": [\n          {\n            \"name\": \"webpack\",\n            \"versionSpecifier\": \">=5.0.0, <5.76.0\"\n          }\n        ],\n        \"safeDependencies\": [\n          {\n            \"name\": \"webpack\",\n            \"versionSpecifier\": \"5.76.0\"\n          }\n        ],\n        \"reachableIf\": \"you host an application utilizing webpack and an attacker can control a property of an untrusted object\"\n      },\n      \"exposureType\": \"REACHABLE\",\n      \"repositoryId\": \"12345\",\n      \"subdirectory\": \"frontend\",\n      \"matchedDependency\": {\n        \"name\": \"webpack\",\n        \"versionSpecifier\": \"5.69.0\"\n      },\n      \"dependencyFileLocation\": {\n        \"path\": \"frontend/yarn.lock\",\n        \"startLine\": \"29836\",\n        \"url\": \"https://github.com/foo/bar/blob/b66f64c3d869520f79c1b6ab02efb8bc78ecb6ba/frontend/yarn.lock#L29836\",\n        \"startCol\": \"0\",\n        \"endLine\": \"0\",\n        \"endCol\": \"0\"\n      },\n      \"triage\": {\n        \"status\": \"CLOSED\",\n        \"dismissReason\": \"UNKNOWN_REASON\",\n        \"issueUrl\": \"\",\n        \"prUrl\": \"\"\n      },\n      \"groupKey\": \"499382::frontend::ssc-{{getVar 'uuid'}}::reachable\",\n      \"closestSafeDependency\": {\n        \"name\": \"webpack\",\n        \"versionSpecifier\": \"5.76.0\"\n      },\n      \"repositoryName\": \"foo/bar\",\n      \"openedAt\": \"2023-11-01T15:21:37Z\",\n      \"firstTriagedAt\": \"1970-01-01T00:00:00Z\",\n      \"transitivity\": \"TRANSITIVE\",\n      \"usages\": [],\n      \"packageManager\": \"yarn\"\n    }\n    {{/repeat}}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "dfa09548-a09f-42d8-82b3-f993ff36114b",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "deployments/:deploymentSlug/findings",
+      "responses": [
+        {
+          "uuid": "a7e4b419-c625-4f27-a51b-3b30af27ba18",
+          "body": "{\n  \"findings\": [\n    {{#repeat (queryParam 'page_size' 100)}}\n    {\n      \"id\": {{add @index 1}},\n      \"ref\": \"refs/pull/{{faker 'number.int'}}/merge\",\n      \"first_seen_scan_id\": {{faker 'number.int'}},\n      \"syntactic_id\": \"440eeface888e78afceac3dc7d4cc2cf\",\n      \"match_based_id\": \"0f8c79a6f7e0ff2f908ff5bc366ae1548465069bae8892088051e1c3b4b12c6b8df37d5bcbb181eb868aa79f81f239d14bf2336d552786ab8ccdc7279adf07a6_1\",\n      \"external_ticket\": {\n        \"external_slug\": \"OPS-158\",\n        \"url\": \"string\"\n      },\n      \"repository\": {\n        \"name\": \"semgrep\",\n        \"url\": \"https://github.com/semgrep/semgrep\"\n      },\n      \"line_of_code_url\": \"https://github.com/semgrep/semgrep/blob/39f95450a7d4d70e54c9edbd109bed8210a36889/src/core_cli/Core_CLI.ml#L1\",\n      \"triage_state\": \"untriaged\",\n      \"state\": \"unresolved\",\n      \"status\": \"open\",\n      \"severity\": \"medium\",\n      \"confidence\": \"medium\",\n      \"categories\": [\n        \"security\"\n      ],\n      \"created_at\": \"2020-11-18T23:28:12.391807Z\",\n      \"relevant_since\": \"2020-11-18T23:28:12.391807Z\",\n      \"rule_name\": \"typescript.react.security.audit.react-no-refs.react-no-refs\",\n      \"rule_message\": \"`ref` usage found. refs give direct DOM access and may create a possibility for XSS, which could cause\\nsensitive information such as user cookies to be retrieved by an attacker. Instead, avoid direct DOM\\nmanipulation or use DOMPurify to sanitize HTML before writing it into the page.\\n\",\n      \"location\": {\n        \"file_path\": \"frontend/src/corpComponents/Code.tsx\",\n        \"line\": 120,\n        \"column\": 8,\n        \"end_line\": 124,\n        \"end_column\": 16\n      },\n      \"sourcing_policy\": {\n        \"id\": 120,\n        \"name\": \"Default Policy\",\n        \"slug\": \"default-policy\"\n      },\n      \"triaged_at\": \"2020-11-19T23:28:12.391807Z\",\n      \"triage_comment\": \"This finding is from the test repo\",\n      \"triage_reason\": \"acceptable_risk\",\n      \"state_updated_at\": \"2020-11-19T23:28:12.391807Z\",\n      \"rule\": {\n        \"name\": \"html.security.plaintext-http-link.plaintext-http-link\",\n        \"message\": \"This link points to a plaintext HTTP URL. Prefer an encrypted HTTPS URL if possible.\",\n        \"confidence\": \"high\",\n        \"category\": \"security\",\n        \"subcategories\": [\n          \"vuln\"\n        ],\n        \"vulnerability_classes\": [\n          \"Mishandled Sensitive Information\"\n        ],\n        \"cwe_names\": [\n          \"CWE-319: Cleartext Transmission of Sensitive Information\"\n        ],\n        \"owasp_names\": [\n          \"A03:2017 - Sensitive Data Exposure\",\n          \"A02:2021 - Cryptographic Failures\"\n        ]\n      },\n      \"assistant\": {\n        \"autofix\": {\n          \"fix_code\": \"cookie.setHttpOnly(true);\\nresponse.addCookie(cookie);\",\n          \"explanation\": \"This fix requires an additional library to be imported.\"\n        },\n        \"guidance\": {\n          \"summary\": \"Use a template rendering engine such as EJS instead of string concatenation.\",\n          \"instructions\": \"1. Check if your project has any template engines installed such as EJS, Pug, or Mustache.\\n    If not, install EJS, with a command such as `$ npm install ejs`.\\n2. Create an EJS template: `const template = '<h2><%= user.id %></h2>'`\\n3. <... example trimmed in API docs ...>\"\n        },\n        \"autotriage\": {\n          \"verdict\": \"false_positive\",\n          \"reason\": \"The matched code is used for a non-security related feature.\"\n        },\n        \"component\": {\n          \"tag\": \"user data\",\n          \"risk\": \"high\"\n        }\n      }\n    }\n    {{/repeat}}\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "c926345d-05b8-4a29-8734-0abc0a633524",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "deployments/:deploymentId/secrets",
+      "responses": [
+        {
+          "uuid": "5c4c762a-5e99-41ee-92f3-9f5ceb831a07",
+          "body": "{\n  \"findings\": [\n    {{#repeat (queryParam 'limit' 100)}}\n    {{setVar 'createdAt' (faker 'date.past')}}\n    {{setVar 'org' (faker 'lorem.word')}}\n    {{setVar 'repo' (faker 'lorem.word')}}\n    {{setvar 'pr' (faker 'number.int')}}\n    {\n      \"createdAt\": \"{{getVar 'createdAt'}}\",\n      \"updatedAt\": \"{{getVar 'createdAt'}}\",\n      \"id\": \"{{faker 'number.int'}}\",\n      \"type\": \"OpenAI\",\n      \"findingPath\": \"src/ai.py:232\",\n      \"findingPathUrl\": \"https://github.com/foo/bar/blob/6ad16b240d4b6ae5bd6e326dd71053c21344e311/src/ai.py#L232\",\n      \"repository\": {\n        \"name\": \"{{getVar 'org'}}/{{getVar 'repo'}}\",\n        \"url\": \"https://github.com/{{getVar 'org'}}/{{getVar 'repo'}}\",\n        \"visibility\": \"REPOSITORY_VISIBILITY_PRIVATE\",\n        \"scmType\": \"SCM_TYPE_GITHUB\"\n      },\n      \"ref\": \"refs/pull/{{getVar 'pr'}}/merge\",\n      \"refUrl\": \"https://github.com/{{getVar 'org'}}/{{getVar 'repo'}}/pull/{{getVar 'pr'}}\",\n      \"severity\": \"SEVERITY_HIGH\",\n      \"confidence\": \"CONFIDENCE_HIGH\",\n      \"validationState\": \"VALIDATION_STATE_CONFIRMED_VALID\",\n      \"mode\": \"MODE_MONITOR\",\n      \"status\": \"FINDING_STATUS_FIXED\",\n      \"ruleHashId\": \"lBU41LA\"\n    }\n    {{/repeat}}\n  ],\n  \"cursor\": null\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "9afd46fa-7b80-4aca-b65d-4349ca39f366"
+    },
+    {
+      "type": "route",
+      "uuid": "7146872a-2e50-468b-8116-3fdca220e225"
+    },
+    {
+      "type": "route",
+      "uuid": "7c19768c-da03-4a6c-af34-e1c31822852c"
+    },
+    {
+      "type": "route",
+      "uuid": "dfa09548-a09f-42d8-82b3-f993ff36114b"
+    },
+    {
+      "type": "route",
+      "uuid": "c926345d-05b8-4a29-8734-0abc0a633524"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}
